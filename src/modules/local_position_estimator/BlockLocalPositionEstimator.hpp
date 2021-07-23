@@ -5,7 +5,7 @@
 #include <px4_platform_common/module_params.h>
 #include <px4_platform_common/posix.h>
 #include <lib/controllib/blocks.hpp>
-#include <lib/ecl/geo/geo.h>
+#include <lib/geo/geo.h>
 #include <lib/mathlib/mathlib.h>
 #include <matrix/Matrix.hpp>
 
@@ -401,8 +401,6 @@ private:
 
 
 	DEFINE_PARAMETERS(
-		(ParamInt<px4::params::SYS_AUTOSTART>) _param_sys_autostart,   /**< example parameter */
-
 		// general parameters
 		(ParamInt<px4::params::LPE_FUSION>) _param_lpe_fusion,
 		(ParamFloat<px4::params::LPE_VXY_PUB>) _param_lpe_vxy_pub,

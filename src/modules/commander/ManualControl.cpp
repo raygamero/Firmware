@@ -47,11 +47,8 @@ bool ManualControl::update()
 	bool updated = false;
 
 	if (_manual_control_setpoint_sub.updated()) {
-		manual_control_setpoint_s manual_control_setpoint;
-
-		if (_manual_control_setpoint_sub.copy(&manual_control_setpoint)) {
-			process(manual_control_setpoint);
-		}
+		_last_manual_control_setpoint = _manual_control_setpoint;
+		_manual_control_setpoint_sub.copy(&_manual_control_setpoint);
 
 		updated = true;
 	}
@@ -63,13 +60,8 @@ bool ManualControl::update()
 	return updated && _rc_available;
 }
 
-void ManualControl::process(const manual_control_setpoint_s &manual_control_setpoint)
-{
-	_last_manual_control_setpoint = _manual_control_setpoint;
-	_manual_control_setpoint = manual_control_setpoint;
-}
-
-bool ManualControl::wantsOverride(const vehicle_control_mode_s &vehicle_control_mode)
+bool ManualControl::wantsOverride(const vehicle_control_mode_s &vehicle_control_mode,
+				  const vehicle_status_s &vehicle_status)
 {
 	const bool override_auto_mode = (_param_rc_override.get() & OverrideBits::OVERRIDE_AUTO_MODE_BIT)
 					&& vehicle_control_mode.flag_control_auto_enabled;
@@ -77,7 +69,11 @@ bool ManualControl::wantsOverride(const vehicle_control_mode_s &vehicle_control_
 	const bool override_offboard_mode = (_param_rc_override.get() & OverrideBits::OVERRIDE_OFFBOARD_MODE_BIT)
 					    && vehicle_control_mode.flag_control_offboard_enabled;
 
-	if (_rc_available && (override_auto_mode || override_offboard_mode)) {
+	const bool override_landing = (vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_AUTO_LANDGPSFAIL
+				       || vehicle_status.nav_state == vehicle_status_s::NAVIGATION_STATE_DESCEND);
+
+
+	if (_rc_available && (override_auto_mode || override_offboard_mode || override_landing)) {
 		const float minimum_stick_change = .01f * _param_com_rc_stick_ov.get();
 
 		const bool rpy_moved = (fabsf(_manual_control_setpoint.x - _last_manual_control_setpoint.x) > minimum_stick_change)

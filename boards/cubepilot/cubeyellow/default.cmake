@@ -8,7 +8,6 @@ px4_add_board(
 	ARCHITECTURE cortex-m7
 	ROMFSROOT px4fmu_common
 	IO cubepilot_io-v2_default
-	TESTING
 	UAVCAN_INTERFACES 2
 	SERIAL_PORTS
 		TEL1:/dev/ttyS0
@@ -18,6 +17,7 @@ px4_add_board(
 		TEL3:/dev/ttyS4
 		GPS2:/dev/ttyS5
 	DRIVERS
+		adc/ads1115
 		adc/board_adc
 		barometer # all available barometer drivers
 		batt_smbus
@@ -34,13 +34,12 @@ px4_add_board(
 		imu/invensense/icm20649
 		imu/invensense/icm20948
 		irlock
-		lights/blinkm
-		lights/rgbled
-		lights/rgbled_ncp5623c
+		lights # all available light drivers
 		magnetometer # all available magnetometer drivers
 		optical_flow # all available optical flow drivers
-		#osd
+		osd
 		pca9685
+		pca9685_pwm_out
 		power_monitor/ina226
 		#protocol_splitter
 		pwm_out_sim
@@ -48,8 +47,8 @@ px4_add_board(
 		px4io
 		roboclaw
 		rpm
+		smart_battery/batmon
 		telemetry # all available telemetry drivers
-		test_ppm
 		tone_alarm
 		uavcan
 	MODULES
@@ -84,6 +83,8 @@ px4_add_board(
 		sensors
 		sih
 		temperature_compensation
+		uuv_att_control
+		uuv_pos_control
 		vmount
 		vtol_att_control
 	SYSTEMCMDS
@@ -107,7 +108,8 @@ px4_add_board(
 		reboot
 		reflect
 		sd_bench
-		tests # tests and test runner
+		#serial_test
+		system_time
 		top
 		topic_listener
 		tune_control
@@ -117,7 +119,8 @@ px4_add_board(
 		work_queue
 	EXAMPLES
 		fake_gps
-		fake_magnetometer
+		#fake_imu
+		#fake_magnetometer
 		#fixedwing_control # Tutorial code from https://px4.io/dev/example_fixedwing_control
 		#hello
 		#hwtest # Hardware test
